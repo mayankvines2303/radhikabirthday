@@ -93,6 +93,7 @@
       <a href="#timeline" data-view="timeline">Our Story</a>
       <a href="#reasons" data-view="reasons">100 Reasons</a>
       <a href="#dreams" data-view="dreams">Our Future</a>
+      <a href="#nazar" data-view="nazar">🧿 Nazar Na Lage</a>
     </div>
     <button class="nav-burger" id="navBurger" aria-label="Open menu">☰</button>
   </nav>
@@ -222,6 +223,80 @@
     </div>
     <div class="dreams-grid" id="dreamsGrid"></div>
   </section>
+
+  <!-- ===== NAZAR NA LAGE VIEW ===== -->
+  <section id="view-nazar" class="view nazar-view" data-view="nazar" hidden>
+    <div class="nazar-hero">
+      <button class="nazar-eye" id="nazarEyeIcon" aria-label="Evil eye — tap for a hidden blessing">🧿</button>
+      <h1 class="nazar-title">🧿 Nazar Na Lage</h1>
+      <p class="nazar-subtitle">
+        Some people protect with words.<br>
+        Some with prayers.<br>
+        This is my little digital protection for the most precious person in my life.
+      </p>
+    </div>
+
+    <div class="nazar-message glass">
+      <p class="eyebrow">a quiet wish</p>
+      <h2>For My Beautiful Radhika ❤️</h2>
+      <p class="nazar-body">
+        I may not always be beside you...<br><br>
+        but every single day I silently wish that nothing ever steals your happiness.<br><br>
+        May every smile stay with you.<br>
+        May every dream come true.<br>
+        May every problem become smaller.<br>
+        May every blessing become bigger.<br>
+        And may every evil eye stay far away from you.<br><br>
+        Because your happiness means everything to me.<br>
+        🧿❤️
+      </p>
+    </div>
+
+    <div class="nazar-interactive">
+      <button class="btn-primary nazar-protect-btn" id="protectSmileBtn">Protect My Smile 🧿</button>
+      <div class="nazar-blessing-stage" id="nazarBlessingStage">
+        <p class="nazar-blessing-text" id="nazarBlessingText"></p>
+      </div>
+      <canvas class="nazar-fx-canvas" id="nazarFxCanvas"></canvas>
+    </div>
+
+    <div class="nazar-circle-wrap">
+      <div class="nazar-circle">
+        <span class="nazar-circle-eye">🧿</span>
+        <span class="nazar-circle-label">Protected ❤️</span>
+      </div>
+    </div>
+
+    <div class="nazar-daily glass">
+      <p class="eyebrow">today's blessing</p>
+      <p class="nazar-daily-text" id="nazarDailyText"></p>
+    </div>
+
+    <p class="nazar-footer">
+      "If I could protect you from every sadness,<br>
+      I would.<br>
+      Until then,<br>
+      let this page remind you that someone is always praying for your happiness.<br>
+      — Mayank ❤️"
+    </p>
+  </section>
+
+  <!-- ===== NAZAR SECRET OVERLAY (7 taps on the evil eye) ===== -->
+  <div id="nazarSecretOverlay" class="nazar-secret-overlay" hidden>
+    <canvas class="nazar-fx-canvas" id="nazarSecretCanvas"></canvas>
+    <div class="nazar-secret-content">
+      <p class="secret-heart-big">🧿</p>
+      <p class="nazar-secret-text">
+        No matter how far we are,<br>
+        my prayers will always find you.<br>
+        Stay protected.<br>
+        Stay happy.<br>
+        I love you forever.<br>
+        — Mayank ❤️
+      </p>
+      <button class="btn-secondary" id="closeNazarSecretBtn">Close</button>
+    </div>
+  </div>
 
   <!-- ===== SECRET VIEW ===== -->
   <section id="view-secret" class="view secret-view" data-view="secret" hidden>

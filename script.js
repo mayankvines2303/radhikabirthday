@@ -557,6 +557,44 @@ const DREAMS = [
   { icon: "👶", title: "Kids", text: "Two kids, one loud and happy home, and you as their favourite person, just like you're mine." },
 ];
 
+/**
+ * NAZAR NA LAGE — BLESSINGS
+ * Shown randomly when "Protect My Smile" is tapped, and one is picked
+ * automatically each day for the "Today's Blessing" line. Add or edit freely.
+ */
+const BLESSINGS = [
+  "Stay Happy Always",
+  "May Every Dream Come True",
+  "You Are Protected",
+  "Smile Forever",
+  "Nothing Can Harm Your Beautiful Heart",
+  "Keep Shining",
+  "Stay Safe Always",
+  "Happiness Is Coming",
+  "Your Light Can Never Be Dimmed",
+  "Good Things Are Finding Their Way To You",
+  "You Are Loved More Than You Know",
+  "Peace Will Always Find You",
+  "May Your Heart Stay Light",
+  "You Are Someone's Whole World",
+  "Every Storm In Your Life Will Pass",
+  "Your Kindness Will Always Come Back To You",
+  "You Are Exactly Where You're Meant To Be",
+  "May Only Good Things Reach You",
+  "You Are Stronger Than Any Bad Day",
+  "Your Smile Is Protected Today",
+  "May Worry Never Stay Long In Your Mind",
+  "You Deserve Every Good Thing Coming Your Way",
+  "Your Prayers Are Being Answered, Slowly But Surely",
+  "You Are Safe. You Are Loved. You Are Enough",
+  "May Your Days Be Softer From Here On",
+  "Nothing Negative Can Touch This Heart",
+  "You Are Someone's Favourite Person",
+  "May Your Path Be Lit With Small Miracles",
+  "Your Happiness Is Watched Over, Always",
+  "You Are Wrapped In Love, Even From Far Away",
+];
+
 /* ============================================================================
    2. APP LOGIC — the engine. Safe to leave alone.
    ============================================================================ */
@@ -756,6 +794,7 @@ function boot() {
   initReasons();
   initDreams();
   initSecret();
+  initNazarPage();
   initMusicPlayer();
 
   showView(location.hash.replace("#", "") || "home");
@@ -765,7 +804,7 @@ function boot() {
    NAVIGATION / VIEW ROUTING
    --------------------------------------------------------------------------- */
 function showView(name) {
-  const valid = ["home", "days", "gallery", "timeline", "reasons", "dreams", "secret"];
+  const valid = ["home", "days", "gallery", "timeline", "reasons", "dreams", "nazar", "secret"];
   if (!valid.includes(name)) name = "home";
   $$(".view").forEach((v) => (v.hidden = v.dataset.view !== name));
   $$(".nav-links a").forEach((a) => a.classList.toggle("active", a.dataset.view === name));
@@ -1189,6 +1228,173 @@ function initSecret() {
     history.replaceState(null, "", "#home");
     showView("home");
   });
+}
+
+/* ---------------------------------------------------------------------------
+   NAZAR NA LAGE — protection page
+   --------------------------------------------------------------------------- */
+function initNazarPage() {
+  // "Today's Blessing" — same for everyone all day, changes automatically
+  // at midnight because it's derived from the real calendar date.
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000
+  );
+  $("#nazarDailyText").textContent = "🧿 " + BLESSINGS[dayOfYear % BLESSINGS.length];
+
+  // "Protect My Smile" button: pulse + floating hearts/sparkles + a random blessing.
+  const btn = $("#protectSmileBtn");
+  const blessingText = $("#nazarBlessingText");
+  const stageCanvas = $("#nazarFxCanvas");
+
+  btn.addEventListener("click", () => {
+    btn.classList.remove("pulsing"); void btn.offsetWidth; btn.classList.add("pulsing");
+    if (navigator.vibrate) navigator.vibrate([40, 30, 40]);
+
+    let next = BLESSINGS[Math.floor(Math.random() * BLESSINGS.length)];
+    // avoid repeating the exact same blessing twice in a row when possible
+    if (BLESSINGS.length > 1 && next === blessingText.textContent.replace("✨ ", "")) {
+      next = BLESSINGS[(BLESSINGS.indexOf(next) + 1) % BLESSINGS.length];
+    }
+    blessingText.classList.remove("show");
+    void blessingText.offsetWidth;
+    blessingText.textContent = "✨ " + next;
+    blessingText.classList.add("show");
+
+    burstNazarParticles(stageCanvas, btn);
+  });
+
+  // Evil eye icon: tap 7 times to reveal the hidden full-screen blessing.
+  let eyeTaps = 0, eyeResetTimer;
+  const eyeIcon = $("#nazarEyeIcon");
+  const overlay = $("#nazarSecretOverlay");
+  const overlayCanvas = $("#nazarSecretCanvas");
+  let overlayFxStop = null;
+
+  eyeIcon.addEventListener("click", () => {
+    eyeTaps++;
+    clearTimeout(eyeResetTimer);
+    eyeResetTimer = setTimeout(() => (eyeTaps = 0), 3000);
+    if (eyeTaps >= 7) {
+      eyeTaps = 0;
+      overlay.hidden = false;
+      overlayFxStop = runNazarFloatingHearts(overlayCanvas);
+    }
+  });
+
+  $("#closeNazarSecretBtn").addEventListener("click", () => {
+    overlay.hidden = true;
+    if (overlayFxStop) overlayFxStop();
+  });
+}
+
+/* Short burst of floating hearts + sparkles + a soft blue pulse ring,
+   centered on the button that was tapped. */
+function burstNazarParticles(canvas, anchorEl) {
+  if (!canvas) return;
+  const parent = canvas.parentElement;
+  const rect = parent.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+  const ctx = canvas.getContext("2d");
+  const anchorRect = anchorEl.getBoundingClientRect();
+  const cx = anchorRect.left - rect.left + anchorRect.width / 2;
+  const cy = anchorRect.top - rect.top;
+
+  const hearts = Array.from({ length: 14 }, () => ({
+    x: cx + (Math.random() - 0.5) * 60,
+    y: cy,
+    size: Math.random() * 8 + 6,
+    speed: Math.random() * 1.4 + 0.8,
+    drift: (Math.random() - 0.5) * 1.2,
+    life: 1,
+    color: Math.random() > 0.5 ? "#7fb2ff" : "#e8b4b8",
+  }));
+  const sparkles = Array.from({ length: 18 }, () => ({
+    x: cx + (Math.random() - 0.5) * 100,
+    y: cy + (Math.random() - 0.5) * 40,
+    r: Math.random() * 2 + 1,
+    life: 1,
+    fade: Math.random() * 0.02 + 0.01,
+  }));
+
+  let frame = 0;
+  function tick() {
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    hearts.forEach((h) => {
+      h.y -= h.speed; h.x += h.drift; h.life -= 0.012;
+      if (h.life <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = Math.max(h.life, 0);
+      ctx.fillStyle = h.color;
+      ctx.translate(h.x, h.y);
+      const s = h.size / 16;
+      ctx.beginPath();
+      ctx.moveTo(0, 4 * s);
+      ctx.bezierCurveTo(-8 * s, -4 * s, -16 * s, 6 * s, 0, 16 * s);
+      ctx.bezierCurveTo(16 * s, 6 * s, 8 * s, -4 * s, 0, 4 * s);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    sparkles.forEach((s) => {
+      s.life -= s.fade;
+      if (s.life <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = Math.max(s.life, 0);
+      ctx.fillStyle = "#f5efe6";
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    });
+
+    if (frame < 90) requestAnimationFrame(tick);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  tick();
+}
+
+/* Gentle continuous floating hearts used behind the full-screen secret blessing.
+   Returns a stop() function to clean it up when the overlay closes. */
+function runNazarFloatingHearts(canvas) {
+  if (!canvas) return () => {};
+  function resize() { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
+  resize();
+  window.addEventListener("resize", resize);
+  const ctx = canvas.getContext("2d");
+  const hearts = Array.from({ length: 30 }, () => ({
+    x: Math.random() * canvas.width,
+    y: canvas.height + Math.random() * canvas.height,
+    size: Math.random() * 14 + 8,
+    speed: Math.random() * 0.6 + 0.3,
+    drift: (Math.random() - 0.5) * 0.5,
+    opacity: Math.random() * 0.5 + 0.2,
+  }));
+  let running = true;
+  function frame() {
+    if (!running) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hearts.forEach((h) => {
+      h.y -= h.speed; h.x += h.drift;
+      if (h.y < -20) { h.y = canvas.height + 20; h.x = Math.random() * canvas.width; }
+      ctx.save();
+      ctx.globalAlpha = h.opacity;
+      ctx.fillStyle = "#7fb2ff";
+      ctx.translate(h.x, h.y);
+      const s = h.size / 16;
+      ctx.beginPath();
+      ctx.moveTo(0, 4 * s);
+      ctx.bezierCurveTo(-8 * s, -4 * s, -16 * s, 6 * s, 0, 16 * s);
+      ctx.bezierCurveTo(16 * s, 6 * s, 8 * s, -4 * s, 0, 4 * s);
+      ctx.fill();
+      ctx.restore();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+  return () => { running = false; window.removeEventListener("resize", resize); };
 }
 
 /* ---------------------------------------------------------------------------
