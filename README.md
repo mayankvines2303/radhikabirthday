@@ -188,4 +188,4 @@ RadhikaBirthday/
 - Everything gracefully degrades: missing photos, music, or voice notes show a soft placeholder instead of breaking the page.
 - Built with plain HTML5, CSS3, and vanilla JavaScript — no frameworks, no build step, no dependencies to install.
 
-Made with ❤️, for Radhika..
+Made with ❤️, for Radhika.
